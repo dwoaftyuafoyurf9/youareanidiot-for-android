@@ -20,7 +20,7 @@ html, body {
     position: absolute;
     width: 320px;
     height: 220px;
-    background: white; /* white placeholder */
+    background: white;
     border: 1px solid #aaa;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     font-family: Segoe UI, sans-serif;
@@ -83,7 +83,6 @@ function createWindow(x = 0, y = 0) {
     win.style.left = x + "px";
     win.style.top = y + "px";
 
-    // Initially white rectangle
     document.body.appendChild(win);
     windows.push(win);
 
@@ -108,13 +107,12 @@ function createWindow(x = 0, y = 0) {
         });
     }
 
-    // Delay 1.5s before loading iframe and starting bounce
+    // 1.5s delay → load iframe + start bouncing
     setTimeout(() => {
         win.innerHTML = `<iframe src="https://youareanidiot.cc/lol.html"></iframe>`;
         addButtons();
 
-        // Start bouncing fast
-        let dx = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1); // 15–35px/frame
+        let dx = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1);
         let dy = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1);
 
         function move() {
@@ -135,9 +133,21 @@ function createWindow(x = 0, y = 0) {
     }, 1500);
 }
 
-/* Click anywhere → alert + spawn 6 windows */
+/* Click anywhere → fullscreen, alert + spawn 6 windows */
 document.addEventListener("click", (e) => {
+    // Request fullscreen
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+    }
+
+    // Alert
     alert("You are an idiot!");
+
+    // Spawn 6 windows
     for (let i = 0; i < 6; i++) createWindow(0, 0);
 });
 </script>
