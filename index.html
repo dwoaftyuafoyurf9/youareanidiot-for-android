@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>You Are An Idiot</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    cursor: pointer;
+}
+
+/* Fake window */
+.fake-window {
+    position: absolute;
+    width: 320px;
+    height: 220px;
+    background: white; /* white placeholder */
+    border: 1px solid #aaa;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    font-family: Segoe UI, sans-serif;
+    user-select: none;
+}
+
+/* Title bar */
+.title-bar {
+    height: 30px;
+    background: #e5e5e5;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Buttons */
+.btn {
+    width: 45px;
+    height: 100%;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #ccc;
+}
+
+.btn.close:hover {
+    background: red;
+    color: white;
+}
+
+/* Iframe */
+.fake-window iframe {
+    width: 100%;
+    height: calc(100% - 30px);
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+/* Flash background every 1 second */
+let isBlack = true;
+setInterval(() => {
+    document.body.style.backgroundColor = isBlack ? "black" : "white";
+    isBlack = !isBlack;
+}, 1000);
+
+/* Store windows */
+const windows = [];
+
+/* Create a fake popup window at x,y */
+function createWindow(x = 0, y = 0) {
+    const win = document.createElement("div");
+    win.className = "fake-window";
+    win.style.left = x + "px";
+    win.style.top = y + "px";
+
+    // Initially white rectangle
+    document.body.appendChild(win);
+    windows.push(win);
+
+    function addButtons() {
+        const titleBar = document.createElement("div");
+        titleBar.className = "title-bar";
+        titleBar.innerHTML = `<div class="btn minimize">➖</div><div class="btn close">✕</div>`;
+        win.prepend(titleBar);
+
+        const minimizeBtn = titleBar.querySelector(".minimize");
+        const closeBtn = titleBar.querySelector(".close");
+
+        minimizeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            win.style.display = "none";
+            setTimeout(() => win.style.display = "block", 1000);
+        });
+
+        closeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            win.remove();
+        });
+    }
+
+    // Delay 1.5s before loading iframe and starting bounce
+    setTimeout(() => {
+        win.innerHTML = `<iframe src="https://youareanidiot.cc/lol.html"></iframe>`;
+        addButtons();
+
+        // Start bouncing fast
+        let dx = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1); // 15–35px/frame
+        let dy = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1);
+
+        function move() {
+            const rect = win.getBoundingClientRect();
+            let x = rect.left + dx;
+            let y = rect.top + dy;
+
+            if (x <= 0 || x + rect.width >= window.innerWidth) dx *= -1;
+            if (y <= 0 || y + rect.height >= window.innerHeight) dy *= -1;
+
+            win.style.left = x + "px";
+            win.style.top = y + "px";
+
+            requestAnimationFrame(move);
+        }
+
+        move();
+    }, 1500);
+}
+
+/* Click anywhere → alert + spawn 6 windows */
+document.addEventListener("click", (e) => {
+    alert("You are an idiot!");
+    for (let i = 0; i < 6; i++) createWindow(0, 0);
+});
+</script>
+
+</body>
+</html>
