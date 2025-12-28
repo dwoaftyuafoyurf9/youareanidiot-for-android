@@ -108,7 +108,7 @@ function createWindow(x = 0, y = 0) {
 document.addEventListener("click", e=>{
     alert("You are an idiot!");
     // Spawn 6 in-page windows
-    for(let i=0;i<6;i++) createWindow(0,0);
+    for(let i=0;i<2;i++) createWindow(0,0);
 
     // If embedded in another site
     if(window.top !== window.self){
